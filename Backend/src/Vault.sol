@@ -55,7 +55,8 @@ contract Vault {
                 details.owner = msg.sender;
                 details.tokenId = tokenids[i];
                 details.blockNumber = block.timestamp;
-                NFT.transferFrom(msg.sender, address(this), tokenids[i]);
+                bool sent = NFT.transferFrom(msg.sender, address(this), tokenids[i]);
+                require(sent, "failed");
                 details.staked = true;
                 emit staked(msg.sender, tokenids[i], block.timestamp);
             }
@@ -78,7 +79,8 @@ contract Vault {
         for (uint256 i = 0; i < tokens_length; i++) {
             require(Details[tokenids[i]].staked == true, "Vault: tokenId was not staked");
             delete Details[tokenids[i]];
-            IERC721(NFT).transferFrom(address(this), _owner,tokenids[i]);
+            bool sent = IERC721(NFT).transferFrom(address(this), _owner,tokenids[i]);
+            require(sent, "failed");
             Details[tokenids[i]].staked = false;
             emit unstaked(_owner, tokenids[i]);        
         }
