@@ -34,10 +34,10 @@ contract CounterTest is Test {
         mockNFT.approve(address(vault), 2);
         vault.stake(id);
         vm.warp(1674000000);
-        vault.justClaim(id);
+        vault.claim(id);
         uint256 _bal = rewardToken.balanceOf(address(user1));
         emit balance(_bal,address(user1));
-        vault.claimAndUnstake(id);
+        vault.claim(id);
         vm.stopPrank();  
     }
     //  1673019309
