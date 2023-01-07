@@ -57,25 +57,20 @@ contract Vault {
         }
     }
 
-    function claim (uint16[] calldata tokenids) external {
-        _claim(msg.sender,tokenids); 
-        unstake(msg.sender,tokenids); 
-    }
-
-   
-
-    function unstake(address _owner, uint16[] calldata tokenids) public {
+    function _unstake(address _owner, uint16[] calldata tokenids) external {
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
-        numberOfStake += tokens_length;
+        numberOfStake -= tokens_length;
         for (uint256 i = 0; i < tokens_length; i++) {
+            require(Details[tokenids[i]].owner == msg.sender, "not owner of stake");
             delete Details[tokenids[i]];
             NFT.transferFrom(address(this), _owner,tokenids[i]);
             emit unstaked(_owner, tokenids[i]);        
         }
+        _claim(msg.sender,tokenids); 
     }
 
-    function earnedInfo(uint16[] calldata tokenids) public   returns(uint reward, uint16 id){
+    function _earnedInfo(uint16[] calldata tokenids) private   returns(uint reward, uint16 id){
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
         numberOfStake += tokens_length;
@@ -87,16 +82,20 @@ contract Vault {
         }        
     }
 
+    function earnedInfo(uint16[] calldata tokenids) external returns(uint reward, uint16 id){
+        (reward, id) = _earnedInfo(tokenids);   
+    }
+
     function _claim(address _owner, uint16[] calldata tokenids) internal {
-        (uint256 reward, uint16 id) = earnedInfo(tokenids);
+        (uint256 reward, uint16 id) = _earnedInfo(tokenids);
         emit claimed(_owner,id, reward);
         Details[id].blockTime = block.timestamp;
         if(reward > 0){
             RToken.mint(_owner, reward);   
         }
     }
-}
 
-//193620000000000000000000000
-//19374999988425925925925
-//11342222222222222222
+    function claim (uint16[] calldata tokenids) external {
+        _claim(msg.sender,tokenids); 
+    }
+}
