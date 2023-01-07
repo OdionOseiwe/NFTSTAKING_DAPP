@@ -24,8 +24,6 @@ contract Vault {
     /// @dev mapping of address to token id to details of the stake
     mapping(uint256 => usersDetails) public Details;
 
-    mapping(address => mapping(uint256 => uint256)) public rewards;
-
     /// @dev tokenid to boolean to check if its been staked already 
     mapping(uint256 => bool) tokenIDstaked;
 
@@ -33,7 +31,7 @@ contract Vault {
 
     event staked(address staker, uint256 tokenid, uint256 time);
     event unstaked(address staker, uint256 tokenid);
-    event claimed(address staker, uint256 tokenid, uint256 amount);
+    event claimed(address staker, uint16[] tokenid, uint256 amount);
     event updateTime(address owner, uint256 newtime);
 
     constructor(IERC721 _nft, IERC20 _token) {
@@ -57,12 +55,12 @@ contract Vault {
         }
     }
 
-    function _unstake(address _owner, uint16[] calldata tokenids) external {
+    function _unstake(address _owner, uint16[] calldata tokenids) private {
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
         numberOfStake -= tokens_length;
         for (uint256 i = 0; i < tokens_length; i++) {
-            require(Details[tokenids[i]].owner == msg.sender, "not owner of stake");
+            require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             delete Details[tokenids[i]];
             NFT.transferFrom(address(this), _owner,tokenids[i]);
             emit unstaked(_owner, tokenids[i]);        
@@ -70,26 +68,37 @@ contract Vault {
         _claim(msg.sender,tokenids); 
     }
 
-    function _earnedInfo(uint16[] calldata tokenids) private   returns(uint reward, uint16 id){
+    function unstake (uint16[] calldata tokenids) external {
+        _unstake(msg.sender, tokenids);
+    }
+
+    function _earnedInfo(uint16[] calldata tokenids, address _owner) private view  returns(uint256 reward){
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
-        numberOfStake += tokens_length;
         for (uint256 i = 0; i < tokens_length; i++) {
+            require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             uint256 stakedAt = Details[tokenids[i]].blockTime ;
             uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ 5 days;
-            id = tokenids[i];
-            reward = rewards[msg.sender][tokenids[i]] += earned / 10000;
+            reward += earned / 10000;
         }        
     }
 
-    function earnedInfo(uint16[] calldata tokenids) external returns(uint reward, uint16 id){
-        (reward, id) = _earnedInfo(tokenids);   
+    function earnedInfo(uint16[] calldata tokenids) view external returns(uint256 reward){
+        reward = _earnedInfo(tokenids, msg.sender);
     }
 
     function _claim(address _owner, uint16[] calldata tokenids) internal {
-        (uint256 reward, uint16 id) = _earnedInfo(tokenids);
-        emit claimed(_owner,id, reward);
-        Details[id].blockTime = block.timestamp;
+         require(tokenids.length >= 1, "Vault: invalid Array");
+        uint256 tokens_length = tokenids.length;
+        uint256 reward;
+        for (uint256 i = 0; i < tokens_length; i++) {
+            require(Details[tokenids[i]].owner == _owner, "not owner of stake");
+            uint256 stakedAt = Details[tokenids[i]].blockTime ;
+            Details[tokenids[i]].blockTime = block.timestamp;
+            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ 5 days;
+            reward += earned / 10000;
+        }  
+        emit claimed(_owner,tokenids, reward);
         if(reward > 0){
             RToken.mint(_owner, reward);   
         }
@@ -99,3 +108,7 @@ contract Vault {
         _claim(msg.sender,tokenids); 
     }
 }
+// 1674000000
+// 1673062748
+// 13599092592592592592
+// 8969462962962962962
