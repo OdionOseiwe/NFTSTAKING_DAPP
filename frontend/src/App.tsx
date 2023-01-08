@@ -1,11 +1,21 @@
 import './App.css';
 import Home from './Home';
+import Stake from './Stake';
+import Vault from './Vault';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 
 function App() {
   return (
-    <div>
-     <Home/>
-    </div>
+    <BrowserRouter>
+    <Routes>
+      <Route path="/">
+        <Route index element={<Home />} />
+        <Route path="stake" element={<Stake />} />
+        <Route path="vault" element={<Vault />} />
+      </Route>
+    </Routes>
+  </BrowserRouter>
   );
 }
 

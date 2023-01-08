@@ -1,4 +1,6 @@
 import React from 'react'
+import Layout from './Layout';
+
 export default function Home() {
   return (
     
@@ -8,10 +10,7 @@ export default function Home() {
                 <div className='md:text-3xl lg:text-4xl font-bold '>
                     <h1 className=''> More Protocol </h1>
                 </div>
-                <div className='flex text-xl font-semibold '>
-                    <h3 className='px-10'>STAKE</h3>
-                    <h3>CREATE VAULT</h3>
-                </div>
+                <Layout/>
             </div>
 
             <div className='p-8'>
@@ -42,6 +41,7 @@ export default function Home() {
             </p>
             
         </div>
+
     </>
     
   )
