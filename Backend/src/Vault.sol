@@ -14,6 +14,7 @@ contract Vault {
     IERC20 immutable public RToken;
     IERC721 immutable public NFT;
     uint256 numberOfStake;
+    uint256  public Index = 0 days;
 
     struct usersDetails{
         address owner;
@@ -34,9 +35,10 @@ contract Vault {
     event claimed(address staker, uint16[] tokenid, uint256 amount);
     event updateTime(address owner, uint256 newtime);
 
-    constructor(IERC721 _nft, IERC20 _token) {
+    constructor(IERC721 _nft, IERC20 _token, uint256 _index) {
         NFT = _nft;
         RToken = _token;
+        Index = _index;
     }
 
     /// @dev to help users save gas instead of calling the stake funtion multiple times to deposit NFTs
@@ -78,7 +80,7 @@ contract Vault {
         for (uint256 i = 0; i < tokens_length; i++) {
             require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             uint256 stakedAt = Details[tokenids[i]].blockTime ;
-            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ 5 days;
+            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ Index;
             reward += earned / 10000;
         }        
     }
@@ -95,7 +97,7 @@ contract Vault {
             require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             uint256 stakedAt = Details[tokenids[i]].blockTime ;
             Details[tokenids[i]].blockTime = block.timestamp;
-            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ 5 days;
+            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ Index ;
             reward += earned / 10000;
         }  
         emit claimed(_owner,tokenids, reward);

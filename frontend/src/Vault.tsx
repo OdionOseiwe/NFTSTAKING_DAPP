@@ -1,7 +1,26 @@
 import React from 'react'
 import { Outlet, Link } from "react-router-dom";
+import useFunctionRead from '../hooks/usefunctionRead'
+import usefunctionWrite  from '../hooks/usefunctionWrite';
+import NFT from "../ABI/deployer.json"
+import {useAccount } from 'wagmi'
 
 export default function Vault() {
+
+  const {writeAsync, isLoading:writeLoading, isError:writeError} = usefunctionWrite("deploy", NFT, '0x747f6969c29f2b5561637f27a3a91608694daf54', ['0xa2246e8b4ce49bddefbee20dccc3fe18e2a9c206', '0x5fda5c48ba2233fcb5c9d34303ce1bf0b31c587f', 5])
+
+  const Deploy = async () => {
+    try{
+      const tx  = await writeAsync?.()
+      console.log(tx)
+    }
+    catch(e){
+      console.log(e, writeError);
+      
+    }
+    finally{console.log(writeLoading);
+    }
+  }
   return (
     <div className='text-orange-50 bg-zinc-900 p-8'>
         <div className='sm:flex justify-between p-10 '>
@@ -20,7 +39,7 @@ export default function Vault() {
             <input type="text"  placeholder='NFTAddress' className=' md:w-96 h-10 m-auto p-2 outline-none'/>
             <input type="text"  placeholder='TokenAddress' className='md:w-96  h-10 m-auto p-2 outline-none'/>
             <div className='flex justify-center'>
-              <button className='text-2xl p-4 m-4 bg-slate-600 w-32 rounded-sm text-orange-50'>create</button>
+              <button className='text-2xl p-4 m-4 bg-slate-600 w-32 rounded-sm text-orange-50' onClick={Deploy}>create</button>
             </div>
             
           </form>
@@ -28,3 +47,9 @@ export default function Vault() {
     </div>
   )
 }
+
+
+//deployer 0x747f6969c29f2b5561637f27a3a91608694daf54
+//vault 0x3a1decc5363523de575495089401e41f66a43ab4
+//NFT 0xa2246e8b4ce49bddefbee20dccc3fe18e2a9c206
+//Rewardtoken 0x5fda5c48ba2233fcb5c9d34303ce1bf0b31c587f

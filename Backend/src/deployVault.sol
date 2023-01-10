@@ -10,9 +10,9 @@ contract Deployer {
     mapping(uint256 => address) public vaults;
     uint256 NoVaults;
     function deploy(
-       address _nft, address _RToken
+       address _nft, address _RToken , uint256 _index
     ) external returns (address vault) {    
-        vault = address(new Vault{salt: keccak256(abi.encode(_nft, _RToken))}(IERC721(_nft), IERC20(_RToken)));
+        vault = address(new Vault{salt: keccak256(abi.encode(_nft, _RToken))}(IERC721(_nft), IERC20(_RToken), _index));
         vaults[NoVaults] = vault;
         NoVaults++;
     }

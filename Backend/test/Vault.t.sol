@@ -20,7 +20,7 @@ contract Vaulttest is Test {
     function setUp() public {
         rewardToken = new RewardToken();
         mockNFT = new MockNFT();
-        vault = new Vault(ERC721(mockNFT), IERC20(rewardToken));
+        vault = new Vault(ERC721(mockNFT), IERC20(rewardToken), 5);
     }
 
     function testStake() public {
