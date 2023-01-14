@@ -70,9 +70,9 @@ contract Vault {
         _claim(msg.sender,tokenids); 
     }
 
-    function unstake (uint16[] calldata tokenids) external {
-        _unstake(msg.sender, tokenids);
-    }
+    // function unstake (uint16[] calldata tokenids) external {
+    //     _unstake(msg.sender, tokenids);
+    // }
 
     function _earnedInfo(uint16[] calldata tokenids, address _owner) private view  returns(uint256 reward){
         require(tokenids.length >= 1, "Vault: invalid Array");
