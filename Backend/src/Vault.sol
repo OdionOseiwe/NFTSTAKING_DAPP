@@ -57,24 +57,24 @@ contract Vault {
         }
     }
 
-    function _unstake(address _owner, uint16[] calldata tokenids) private {
+    function _unstake(address _owner, uint16[] calldata tokenids) internal {
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
-        numberOfStake -= tokens_length;
+        // numberOfStake -= tokens_length;
         for (uint256 i = 0; i < tokens_length; i++) {
             require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             delete Details[tokenids[i]];
             NFT.transferFrom(address(this), _owner,tokenids[i]);
             emit unstaked(_owner, tokenids[i]);        
         }
-        _claim(msg.sender,tokenids); 
+        _claim(_owner,tokenids); 
     }
 
     function unstake (uint16[] calldata tokenids) external {
         _unstake(msg.sender, tokenids);
     }
 
-    function _earnedInfo(uint16[] calldata tokenids, address _owner) private view  returns(uint256 reward){
+    function _earnedInfo(uint16[] calldata tokenids, address _owner) internal view  returns(uint256 reward){
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
         for (uint256 i = 0; i < tokens_length; i++) {
