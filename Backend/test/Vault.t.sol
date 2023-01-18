@@ -20,7 +20,7 @@ contract Vaulttest is Test {
     function setUp() public {
         rewardToken = new RewardToken();
         mockNFT = new MockNFT();
-        vault = new Vault(ERC721(mockNFT), IERC20(rewardToken), 5);
+        vault = new Vault(ERC721(mockNFT), IERC20(rewardToken), 1);
     }
 
     function testStake() public {
@@ -36,13 +36,13 @@ contract Vaulttest is Test {
         mockNFT.approve(address(vault), 2);
         mockNFT.approve(address(vault), 3);
         vault.stake(id);
-        vm.warp(1674000000);
+        vm.warp(1675000000);
         vault.claim(id);
         uint256 _bal = rewardToken.balanceOf(address(user1));
         emit balance(_bal,address(user1));
         vault.claim(id);
         uint256 _bal2 = rewardToken.balanceOf(address(user1));
-        emit balance(_bal2,address(user1));
+        assertEq(_bal2 , _bal);
         vm.stopPrank();  
     }
   
@@ -57,15 +57,15 @@ contract Vaulttest is Test {
         mockNFT.approve(address(vault), 1);
         mockNFT.approve(address(vault), 2);
         vault.stake(id);
-        vm.warp(1675000000);
+        vm.warp(1676000000);
         uint info = vault.earnedInfo(id);
         emit Info(info);
-        vm.warp(1676000000);
-        vault.claim(id);    
         vm.warp(1677000000);
+        vault.claim(id);    
+        vm.warp(1678000000);
+        vm.makePersistent(address(user1));
         vault.unstake(id);
-        uint256 _bal2 = rewardToken.balanceOf(address(user1));
-        emit balance(_bal2,address(user1));
+        rewardToken.balanceOf(address(user1));
         vm.stopPrank(); 
     }
 
@@ -78,3 +78,5 @@ contract Vaulttest is Test {
 
 
 // forge test -vvvvv --fork-url  https://eth-goerli.g.alchemy.com/v2/cZArJ5hDwpU8r_6CXv9KbYMJWUtrr3qS --etherscan-api-key Z8P4W843RDB83JD848SWFRI6JVVXGVM9KT
+// 1763553600000000000000000
+// 2816868000000000000000000

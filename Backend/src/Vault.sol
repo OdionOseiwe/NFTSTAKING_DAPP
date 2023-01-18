@@ -60,7 +60,7 @@ contract Vault {
     function _unstake(address _owner, uint16[] calldata tokenids) internal {
         require(tokenids.length >= 1, "Vault: invalid Array");
         uint256 tokens_length = tokenids.length;
-        // numberOfStake -= tokens_length;
+        numberOfStake -= tokens_length;
         for (uint256 i = 0; i < tokens_length; i++) {
             require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             delete Details[tokenids[i]];
@@ -96,8 +96,8 @@ contract Vault {
         for (uint256 i = 0; i < tokens_length; i++) {
             require(Details[tokenids[i]].owner == _owner, "not owner of stake");
             uint256 stakedAt = Details[tokenids[i]].blockTime ;
-            Details[tokenids[i]].blockTime = block.timestamp;
             uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ Index ;
+            Details[tokenids[i]].blockTime = block.timestamp;
             reward += earned / 10000;
         }  
         emit claimed(_owner,tokenids, reward);
