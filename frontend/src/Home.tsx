@@ -21,7 +21,7 @@ export default function Home() {
             </div>
             <div className='p-6 '>
                 <h2 className='lg:text-5xl md:text-3xl sm:text-xl font-semibold capitalize text-center py-4'>how to participate</h2>
-                <div className='bg-orange-200 md:w-3/4  m-auto my-10 md:p-10 sm:p-6 rounded-2xl'>
+                <div className='c md:w-3/4  m-auto my-10 md:p-10 sm:p-6 rounded-2xl'>
                     <h2 className='md:text-5xl text-3xl p-8'>Staking</h2>
                     <p className='p-8 w-11/12'>
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ipsa vitae enim, modi accusantium odio 
