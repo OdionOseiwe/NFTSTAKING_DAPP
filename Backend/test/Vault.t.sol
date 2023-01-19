@@ -9,11 +9,14 @@ import {IERC20} from 'openzeppelin-contracts/token/ERC20/IERC20.sol';
 
 import {RewardToken} from "../src/RewardToken.sol";
 
+import {Deployer} from "../src/deployVault.sol";
+
 
 contract Vaulttest is Test {
     Vault public vault;
     RewardToken public rewardToken;
     MockNFT public mockNFT;
+    Deployer public vaultDeployer;
     address user1 = mkaddr("user1");
     event balance (uint256 balance, address owner);
 
@@ -21,6 +24,11 @@ contract Vaulttest is Test {
         rewardToken = new RewardToken();
         mockNFT = new MockNFT();
         vault = new Vault(ERC721(mockNFT), IERC20(rewardToken), 1);
+        vaultDeployer = new Deployer();
+    }
+
+    function testDeployerVault() public {
+        vaultDeployer.deploy(address(mockNFT), address(rewardToken), 5);
     }
 
     function testStake() public {
@@ -63,7 +71,6 @@ contract Vaulttest is Test {
         vm.warp(1677000000);
         vault.claim(id);    
         vm.warp(1678000000);
-        vm.makePersistent(address(user1));
         vault.unstake(id);
         rewardToken.balanceOf(address(user1));
         vm.stopPrank(); 
@@ -77,6 +84,3 @@ contract Vaulttest is Test {
 }
 
 
-// forge test -vvvvv --fork-url  https://eth-goerli.g.alchemy.com/v2/cZArJ5hDwpU8r_6CXv9KbYMJWUtrr3qS --etherscan-api-key Z8P4W843RDB83JD848SWFRI6JVVXGVM9KT
-// 1763553600000000000000000
-// 2816868000000000000000000

@@ -62,10 +62,10 @@ contract Vault {
         uint256 tokens_length = tokenids.length;
         numberOfStake -= tokens_length;
         for (uint256 i = 0; i < tokens_length; i++) {
-            require(Details[tokenids[i]].owner == _owner, "not owner of stake");
+            require(Details[tokenids[i]].owner == _owner, "not owner of stake");                
             delete Details[tokenids[i]];
             NFT.transferFrom(address(this), _owner,tokenids[i]);
-            emit unstaked(_owner, tokenids[i]);        
+            emit unstaked(_owner, tokenids[i]);       
         }
         _claim(_owner,tokenids); 
     }
