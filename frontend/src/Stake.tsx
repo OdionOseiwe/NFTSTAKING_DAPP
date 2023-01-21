@@ -39,3 +39,20 @@ export default function Stake() {
     </div>
   )
 }
+
+
+// forge create --rpc-url https://eth-goerli.g.alchemy.com/v2/0h4KWpjRd3xXNW50By-hTTaZDJnNpjiw  \ 
+// --private-key 6974ff09da21f8bc9e70bfe4cda2fd911502bc1eed1038e51c475f2f0d622cb8 src/deployVault.sol:Deployer  \   
+// --etherscan-api-key Z8P4W843RDB83JD848SWFRI6JVVXGVM9KT  \  
+// --verify
+
+// forge create --rpc-url https://eth-goerli.g.alchemy.com/v2/0h4KWpjRd3xXNW50By-hTTaZDJnNpjiw  \ 
+// --private-key 6974ff09da21f8bc9e70bfe4cda2fd911502bc1eed1038e51c475f2f0d622cb8 src/deployVault.sol:Deployer  \   
+// --etherscan-api-key Z8P4W843RDB83JD848SWFRI6JVVXGVM9KT  \  
+// --verify
+
+// forge create --rpc-url <your_rpc_url> \
+//     --constructor-args "ForgeUSD" "FUSD" 18 1000000000000000000000 \
+//     --private-key <your_private_key> src/MyToken.sol:MyToken \
+//     --etherscan-api-key <your_etherscan_api_key> \
+//     --verify

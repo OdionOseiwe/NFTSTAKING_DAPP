@@ -49,6 +49,20 @@ export default function Vault() {
 
   }
 
+  const { data: getData,isLoading: getLoading } = useContractRead({
+    address: VAULT_FACTORY_ADDRESS,
+    abi: VaultFactory,
+    functionName: "getAddress",
+
+    onError(error) {
+      // @ts-ignore
+      toast.error(`Failed! ${error.reason}`)
+    }
+  })
+
+  console.log(getData, getLoading);
+  
+
   return (
     <div className='text-orange-50 bg-zinc-900 p-8 min-h-screen'>
       <Navbar />
