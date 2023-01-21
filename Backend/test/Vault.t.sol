@@ -29,6 +29,11 @@ contract Vaulttest is Test {
 
     function testDeployerVault() public {
         vaultDeployer.deploy(address(mockNFT), address(rewardToken), 5);
+        vaultDeployer.getAddress();
+    }
+
+    function testGetAddress() view public {
+        vaultDeployer.getAddress();
     }
 
     function testStake() public {
