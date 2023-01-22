@@ -18,7 +18,7 @@ export default function Vault() {
     address: VAULT_FACTORY_ADDRESS,
     abi: VaultFactory,
     functionName: "deploy",
-    args: [nftAddress, tokenAddress, Number(index)],
+    args: [nftAddress, tokenAddress, Number(index), name],
 
     onError(error) {
       // @ts-ignore
@@ -45,22 +45,14 @@ export default function Vault() {
 
     deployVault?.();
 
+    setName("");
+    setNftAddress("");
+    setNftAddress("");    
+    setIndex(0);
+
     console.log({ name, nftAddress, tokenAddress });
 
   }
-
-  const { data: getData,isLoading: getLoading } = useContractRead({
-    address: VAULT_FACTORY_ADDRESS,
-    abi: VaultFactory,
-    functionName: "getAddress",
-
-    onError(error) {
-      // @ts-ignore
-      toast.error(`Failed! ${error.reason}`)
-    }
-  })
-
-  console.log(getData, getLoading);
   
 
   return (
@@ -87,9 +79,11 @@ export default function Vault() {
 }
 
 
-//deployer 0x747f6969c29f2b5561637f27a3a91608694daf54
-//vault 0x3a1decc5363523de575495089401e41f66a43ab4
-//NFT 0xa2246e8b4ce49bddefbee20dccc3fe18e2a9c206
-//Rewardtoken 0x5fda5c48ba2233fcb5c9d34303ce1bf0b31c587f
+//deployer 0xb663D78fE7Aca81a96B88A2e236Eb6fF955BE564
+//vault 
+//NFT1 0xdA03c3Ed725E5BE8D4AE3ba58f8809446fCd2C4D
+//Rewardtoken1 0x1B8730dc5418b92f12Ba5cC47028bE50eC64D56d
+//NFT2 0xdA03c3Ed725E5BE8D4AE3ba58f8809446fCd2C4D
+//Rewardtoken2 0x6Ff17B9f4779da042fE5A93D84a21B4644370636
 
 

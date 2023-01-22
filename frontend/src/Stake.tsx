@@ -1,8 +1,24 @@
 import React from 'react'
 import { Outlet, Link } from "react-router-dom";
-
+import {  useContractWrite, useWaitForTransaction, useContractRead } from 'wagmi'
+import { VAULT_FACTORY_ADDRESS} from './config';
+import VaultFactory from "./ABI/deployer.json"
+import { toast } from "react-toastify"
+import { useState } from 'react';
 
 export default function Stake() {
+  const { data: getData,isLoading: getLoading } = useContractRead({
+    address: VAULT_FACTORY_ADDRESS,
+    abi: VaultFactory,
+    functionName: "info",
+  
+    onError(error) {
+      // @ts-ignore
+      toast.error(`Failed! ${error.reason}`)
+    }
+  })
+  console.log(getData, getLoading);
+
   return (
     <div className='text-orange-50 bg-zinc-900 p-8 min-h-screen'>
       <div className='sm:flex justify-between p-10 '>
@@ -27,12 +43,15 @@ export default function Stake() {
           <div className='flex justify-between py-12'>
             <div className='px-28 text-2xl'>NFTs</div>
             <div className='px-28 text-2xl'>Payout assets</div>
-            <div className='px-28 text-2xl'>Discount</div>
+            <div className='px-28 text-2xl'>daysOfIncrease</div>
           </div>
+          {
+            getData.map((details)=>{
+              return({
 
-          <div>
-
-          </div>
+              })
+            })
+          }
         </div>
       </div>
         
