@@ -1,4 +1,7 @@
-import Layout from './Layout';
+import Layout from './components/Layout';
+import { Outlet, Link } from "react-router-dom";
+import { ConnectButton} from '@rainbow-me/rainbowkit';
+
 export default function Home() {
 
   return (
@@ -27,8 +30,10 @@ export default function Home() {
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates ipsa vitae enim, modi accusantium odio 
                         magnam omnis quos illo ducimus quasi incidunt amet maxime assumenda iste nulla sit odit possimus?
                     </p>
-                    
-                    <h3 className='text-2xl p-4 m-4 bg-slate-600 inline rounded-sm text-orange-50'>Stake</h3>
+                    <nav className='ext-2xl p-4 m-4 bg-slate-600 inline rounded-sm text-orange-50' >
+                        <Link className='px-10 ' to="/stake">STAKE</Link>
+                    </nav>
+                    <Outlet />
                 </div>
             </div>
         

@@ -45,11 +45,6 @@ export default function Vault() {
 
     deployVault?.();
 
-    setName("");
-    setNftAddress("");
-    setNftAddress("");    
-    setIndex(0);
-
     console.log({ name, nftAddress, tokenAddress });
 
   }
@@ -60,7 +55,7 @@ export default function Vault() {
       <Navbar />
       <div className='md:bg-slate-800 p-8 md:w-3/4 m-auto rounded-3xl my-16'>
         <form onSubmit={handleSubmit} className=' text-slate-900 flex flex-col text-2xl' >
-          <input type="text" onChange={(e: any) => setName(e.target.value)} placeholder='Name' className=' md:w-3/5 h-10 m-auto p-2 outline-none' />
+          <input type="text" onChange={(e: any) => setName(e.target.value)} placeholder='VaultName' className=' md:w-3/5 h-10 m-auto p-2 outline-none' />
           <input type="text" onChange={(e: any) => setNftAddress(e.target.value)} placeholder='NFTAddress' className=' md:w-3/5 h-10 m-auto p-2 outline-none' />
           <input type="text" onChange={(e: any) => setTokenAddress(e.target.value)} placeholder='TokenAddress' className='md:w-3/5  h-10 m-auto p-2 outline-none' />
           <input type="number" onChange={(e: any) => setIndex(e.target.value)} placeholder='Index' className=' md:w-3/5 h-10 m-auto p-2 outline-none' />
