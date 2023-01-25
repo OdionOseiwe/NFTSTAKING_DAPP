@@ -17,14 +17,14 @@ import {RToken} from './RewardToken.sol';
 import {MockNFT} from './MockNFT.sol';
 
 contract Vault is Pausable,ReentrancyGuard, Ownable{
-    IERC20 immutable public RewardToken;
-    IERC721 immutable public StakeNFT;
+    address  public RewardToken;
+    address  public StakeNFT;
     uint256 numberOfStake;
     uint256  public rate = 0 days;
     // unstaking possible after LOCKUP_TIME
     uint public LOCKUP_TIME = 21 days;
     using Address for address;
-
+    address factory;
     struct usersDetails{
         address owner;
         uint256 tokenId;
@@ -41,13 +41,16 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
 
     event staked(address staker, uint256 tokenid, uint256 time);
     event unstaked(address staker, uint256 tokenid);
-    event claimed(address staker, uint16[] tokenid, uint256 amount);
+    event claimed(address staker, uint16 tokenid, uint256 amount);
     event RateChanged(uint256 newRate);
     event LockTimeChanged(uint newLockTime);
 
+    constructor()  {
+        factory = msg.sender;
+    }
 
-
-    constructor(IERC721 _nft, IERC20 _token, uint256 _rate) {
+    function initialize(address _nft, address _token, uint256 _rate) public {
+        require(msg.sender == factory, 'Vault: FORBIDDEN'); 
         StakeNFT = _nft;
         RewardToken = _token;
         rate = _rate;
@@ -77,75 +80,57 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         _;
     }
 
-    /// @dev to help users save gas instead of calling the stake funtion multiple times to deposit StakeNFTs
-    /// @param tokenids is an array of token ids to stake
-    function stake(uint16[] calldata tokenids) external whenNotPaused  nonReentrant(){
-        require(tokenids.length >= 1, "Vault: invalid Array");
-        uint256 tokens_length = tokenids.length;
-        numberOfStake += tokens_length;
-        for (uint256 i = 0; i < tokens_length; i++) {
-            usersDetails storage details = Details[tokenids[i]];
-            details.owner = msg.sender;
-            details.tokenId = tokenids[i];
-            details.blockTime = block.timestamp;
-            StakeNFT.transferFrom(msg.sender, address(this), tokenids[i]);
-            emit staked(msg.sender, tokenids[i], block.timestamp);
-        }
+    function stake(uint16 tokenid) external whenNotPaused  nonReentrant(){
+        IERC721(StakeNFT).transferFrom(msg.sender, address(this), tokenid);
+        usersDetails storage details = Details[tokenid];
+        details.owner = msg.sender;
+        details.tokenId = tokenid;
+        details.blockTime = block.timestamp;
+        emit staked(msg.sender, tokenid, block.timestamp);
+        numberOfStake += tokenid;
     }
 
-    function _unstake( uint16[] calldata tokenids) internal {
-        require(tokenids.length >= 1, "Vault: invalid Array");
-        uint256 tokens_length = tokenids.length;
-        numberOfStake -= tokens_length;
-        for (uint256 i = 0; i < tokens_length; i++) {
-            require(Details[tokenids[i]].owner == msg.sender, "not owner of stake");                
-            delete Details[tokenids[i]];
-            StakeNFT.transferFrom(address(this), msg.sender,tokenids[i]);
-            emit unstaked(msg.sender, tokenids[i]);       
-        }
-        _claim(msg.sender,tokenids); 
+    function _unstake( uint16 tokenid, address _owner) internal {
+        require(Details[tokenid].owner == _owner, "not owner of stake");
+        delete Details[tokenid];
+        IERC721(StakeNFT).transferFrom(address(this), _owner,tokenid);
+        emit unstaked(_owner, tokenid);       
+        _claim(_owner,tokenid); 
+        numberOfStake -= tokenid;
     }
 
-    function unstake (uint16[] calldata tokenids) external whenNotPaused  nonReentrant() {
-        _unstake(tokenids);
+    function unstake (uint16 tokenid) external whenNotPaused  nonReentrant() {
+        _unstake(tokenid, msg.sender);
     }
 
-    function _earnedInfo(uint16[] calldata tokenids, address _owner) internal view  returns(uint256 reward){
-        require(tokenids.length >= 1, "Vault: invalid Array");
-        uint256 tokens_length = tokenids.length;
-        for (uint256 i = 0; i < tokens_length; i++) {
-            require(Details[tokenids[i]].owner == _owner, "not owner of stake");
-            uint256 stakedAt = Details[tokenids[i]].blockTime ;
-            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ rate;
-            reward += earned / 10000;
-        }        
+    function _earnedInfo(uint16 tokenid, address _owner) internal view  returns(uint256 reward){
+        require(Details[tokenid].owner == _owner, "not owner of stake");
+        uint256 stakedAt = Details[tokenid].blockTime ;
+        uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ rate;
+        reward += earned / 10000;
     }
 
-    function earnedInfo(uint16[] calldata tokenids) view external returns(uint256 reward){
-        reward = _earnedInfo(tokenids, msg.sender);
+    function earnedInfo(uint16 tokenid) view external returns(uint256 reward){
+        reward = _earnedInfo(tokenid, msg.sender);
     }
 
-    function _claim(address _owner, uint16[] calldata tokenids) internal {
-        require(tokenids.length >= 1, "Vault: invalid Array");
-        uint256 tokens_length = tokenids.length;
+    function _claim(address _owner, uint16 tokenid) internal {
         uint256 reward;
-        for (uint256 i = 0; i < tokens_length; i++) {
-            require(Details[tokenids[i]].owner == _owner, "not owner of stake");
-            require(block.timestamp - Details[tokenids[i]].blockTime > LOCKUP_TIME, "You recently staked, please wait before withdrawing.");
-            uint256 stakedAt = Details[tokenids[i]].blockTime ;
-            uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ rate ;
-            Details[tokenids[i]].blockTime = block.timestamp;
-            reward += earned / 10000;
-        }  
-        emit claimed(_owner,tokenids, reward);
+        require(Details[tokenid].owner == _owner, "not owner of stake");
+        require(block.timestamp - Details[tokenid].blockTime > LOCKUP_TIME, "You recently staked, please wait before withdrawing.");
+        uint256 stakedAt = Details[tokenid].blockTime ;
+        uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ rate ;
+        Details[tokenid].blockTime = block.timestamp;
+        reward += earned / 10000;
+        emit claimed(_owner,tokenid, reward);
         if(reward > 0){
             require(IERC20(RewardToken).balanceOf(address(this)) > reward, "not enough rewards tokens");
-            RewardToken.transfer( _owner, reward);   
+            IERC20(RewardToken).transfer( _owner, reward);   
         }
     }
 
-    function claim (uint16[] calldata tokenids) external whenNotPaused  nonReentrant() {
-        _claim(msg.sender,tokenids); 
+    function claim (uint16 tokenid) external whenNotPaused  nonReentrant() {
+        _claim(msg.sender,tokenid); 
     }
 
     // 

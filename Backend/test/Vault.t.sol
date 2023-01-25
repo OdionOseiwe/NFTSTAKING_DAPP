@@ -18,17 +18,18 @@ contract Vaulttest is Test {
     MockNFT public mockNFT;
     Deployer public vaultDeployer;
     address user1 = mkaddr("user1");
+    address user2 = mkaddr("user2");    
     event balance (uint256 balance, address owner);
 
     function setUp() public {
         rewardToken = new RToken();
         mockNFT = new MockNFT();
         vaultDeployer = new Deployer();
-        vault = new Vault(ERC721(mockNFT), IERC20(rewardToken), 5);
+        vault = new Vault();
     }
 
     function testDeployerVault() public {
-        vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more');
+        vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
         vaultDeployer.info();
     }
 
@@ -38,49 +39,56 @@ contract Vaulttest is Test {
 
     // 
     function testStake() public {
-        mockNFT.mint(1 ,address(user1) );
-        mockNFT.mint(2 ,address(user1) );
-        mockNFT.mint(3 ,address(user1) );
-        rewardToken.mint(address(vault), 100000000000e18);
-        uint16[] memory id = new uint16[](3);
-        id[0] = 1;
-        id[1] = 2;
-        id[2] = 3;
-        vm.startPrank(address(user1));
-        mockNFT.approve(address(vault), 1);
-        mockNFT.approve(address(vault), 2);
-        mockNFT.approve(address(vault), 3);
-        vault.stake(id);
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        mockNFT.mint(2 ,address(user2) );
+        rewardToken.mint(address(vault2), 100000000000e18);  
+        vm.startPrank(address(user2));
+        mockNFT.approve(address(vault2), 2);
+        Ivault(vault2).stake(2);
         vm.warp(1677000000);
-        vault.claim(id);
-        uint256 _bal = rewardToken.balanceOf(address(user1));
-        emit balance(_bal,address(user1));
+        Ivault(vault2).claim(2);
+        uint256 _bal = rewardToken.balanceOf(address(user2));
+        emit balance(_bal,address(user2));
         // vm.expectRevert(bytes('You recently staked, please wait before withdrawing'));
-        // vault.claim(id);
-        uint256 _bal2 = rewardToken.balanceOf(address(user1));
+        // vault2.claim(id);
+        rewardToken.balanceOf(address(user2));
         vm.stopPrank();  
     }
   
+    function testpause() public {
+        vm.startPrank(address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        Ivault(vault2).pause();  
+        Ivault(vault2).unpause();  
+        vm.stopPrank();
+    }
+
+    function testwithdraw() public {
+        vm.startPrank(address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        rewardToken.mint(address(vault), 100000000000e18);  
+        Ivault(vault2).withdrawTokens();  
+        vm.stopPrank();
+    }
+  
+
     function testStake2() public {
         mockNFT.mint(1 ,address(user1) );
         mockNFT.mint(2 ,address(user1) );
         mockNFT.mint(3 ,address(user1) );
-        rewardToken.mint(address(vault), 100000000000e18);
-        uint16[] memory id = new uint16[](3);
-        id[0] = 1;
-        id[1] = 2;
-        id[2] = 3;
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        rewardToken.mint(address(vault2), 100000000000e18);
         vm.startPrank(address(user1));
-        mockNFT.approve(address(vault), 1);
-        mockNFT.approve(address(vault), 2);
-        mockNFT.approve(address(vault), 3);
-        vault.stake(id);
+        mockNFT.approve(address(vault2), 1);
+        mockNFT.approve(address(vault2), 2);
+        mockNFT.approve(address(vault2), 3);
+        Ivault(vault2).stake(1);
         vm.warp(1677000000);
-        vault.claim(id);
+        Ivault(vault2).claim(1);
         uint256 _bal = rewardToken.balanceOf(address(user1));
         emit balance(_bal,address(user1));
         vm.warp(1679000000);
-        vault.claim(id);
+        Ivault(vault2).claim(1);
         rewardToken.balanceOf(address(user1));
         vm.stopPrank();  
     }
@@ -89,21 +97,19 @@ contract Vaulttest is Test {
     function testInfo() public {
         mockNFT.mint(1 ,address(user1) );
         mockNFT.mint(2 ,address(user1) );
-        rewardToken.mint(address(vault), 100000000000e18);
-        uint16[] memory id = new uint16[](2);
-        id[0] = 1;
-        id[1] = 2;
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        rewardToken.mint(address(vault2), 100000000000e18);
         vm.startPrank(address(user1));
-        mockNFT.approve(address(vault), 1);
-        mockNFT.approve(address(vault), 2);
-        vault.stake(id);
+        mockNFT.approve(address(vault2), 1);
+        mockNFT.approve(address(vault2), 2);
+        Ivault(vault2).stake(1);
         vm.warp(1676000000);
-        uint info = vault.earnedInfo(id);
-        emit Info(info);
+        // uint info = Ivault(vault2).earnedInfo(1);
+        // emit Info(info);
         vm.warp(1677000000);
-        vault.claim(id);    
+        Ivault(vault2).claim(1);    
         vm.warp(1679000000);
-        vault.unstake(id);
+        Ivault(vault2).unstake(1);
         rewardToken.balanceOf(address(user1));
         vm.stopPrank(); 
     }
@@ -115,3 +121,12 @@ contract Vaulttest is Test {
     }
 }
 
+interface Ivault {
+    function stake(uint16 tokenid) external;
+    function claim (uint16 tokenid) external;
+    function unstake(uint16 tokenid) external;
+    function withdrawTokens() external;
+    function pause() external;
+    function unpause() external;
+    function earnedInfo(uint16 tokenid) external;
+}

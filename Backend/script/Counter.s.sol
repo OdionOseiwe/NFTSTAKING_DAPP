@@ -18,7 +18,7 @@ contract CounterScript is Script {
         MockNFT mockNFT = new MockNFT();
         RToken rewardToken  = new RToken();
         Deployer deployer = new Deployer();
-        new Vault(IERC721(mockNFT),IERC20(rewardToken), 5);
+        new Vault();
         vm.stopBroadcast();
     }
 }

@@ -17,20 +17,26 @@ contract Deployer {
     uint256[] public numberOfVaults;
     uint256 counter;
     function deploy(
-       address _nft, address _RToken , uint256 _index, string memory _name
+       address _nft, address _RToken , uint256 _rate, string memory _name, address newOwner
     ) external returns (address vault) {  
         require(_nft != address(0), "address zero");
         require(_RToken != address(0), "address zero");
         require(_RToken != _nft, "the same address");
-        require(vaults[_nft][_RToken] == address(0), "already a Vault");  
-        vault = address(new Vault{salt: keccak256(abi.encode(_nft, _RToken))}(IERC721(_nft), IERC20(_RToken), _index));
+        require(vaults[_nft][_RToken] == address(0), "already a Vault");
+        bytes memory bytecode = type(Vault).creationCode;
+        bytes32 salt = keccak256(abi.encodePacked(_nft, _RToken));
+        assembly {
+            vault := create2(0, add(bytecode, 32), mload(bytecode), salt)
+        }
+        Ivault(vault).initialize(IERC721(_nft),IERC20(_RToken),_rate);
         vaults[_nft][_RToken] = vault;
         vaults[_RToken][_nft] = vault;
         AllVaults[counter].vaultName = _name;
         AllVaults[counter].vaultAddress = vault;
-        AllVaults[counter].vaultIndex = _index;
+        AllVaults[counter].vaultIndex = _rate;
         numberOfVaults.push(counter);
         counter++;
+        Ivault(vault).transferOwnership(newOwner);
     }
 
     function info() external view returns(VaultDe[] memory allAddress){
@@ -41,4 +47,10 @@ contract Deployer {
         }
     }
 
+
+}
+
+interface Ivault {
+    function initialize(IERC721 _nft, IERC20 _token, uint256 _rate) external;
+    function transferOwnership(address newOwner) external;
 }
