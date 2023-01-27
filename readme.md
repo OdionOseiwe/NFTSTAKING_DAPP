@@ -6,3 +6,10 @@ More Protocol helps to buy back NFT liquidity.
 <p>
   <img src="./img/home.png" width="350">
 </p>
+
+The Home Page on More Protocol
+
+<p>
+  <img src="./img/stake.png" width="350">
+</p>
+
