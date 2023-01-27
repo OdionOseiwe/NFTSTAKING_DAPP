@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-// @dev A contract were you stake NFT and claim RewardToken depending on the rate the owner of the vault placed.
-// @dev After staking An NFT you lock it for a period of 21 days then after 21days you can withdraw your nFT and RewardToken. Its only after 21dyas days you can claim
-
 
 import {IERC721} from 'openzeppelin-contracts/token/ERC721/IERC721.sol';
 
@@ -22,7 +19,7 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
     uint256 numberOfStake;
     uint256  public rate = 0 days;
     // unstaking possible after LOCKUP_TIME
-    uint public LOCKUP_TIME = 21 days;
+    uint public LOCKUP_TIME = 1 minutes;
     using Address for address;
     address factory;
     struct usersDetails{
@@ -80,7 +77,7 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         _;
     }
 
-    function stake(uint16 tokenid) external whenNotPaused  nonReentrant(){
+    function stake(uint16 tokenid) public whenNotPaused  nonReentrant(){
         IERC721(StakeNFT).transferFrom(msg.sender, address(this), tokenid);
         usersDetails storage details = Details[tokenid];
         details.owner = msg.sender;
@@ -90,60 +87,41 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         numberOfStake += tokenid;
     }
 
-    function _unstake( uint16 tokenid, address _owner) internal {
-        require(Details[tokenid].owner == _owner, "not owner of stake");
-        delete Details[tokenid];
-        IERC721(StakeNFT).transferFrom(address(this), _owner,tokenid);
-        emit unstaked(_owner, tokenid);       
-        _claim(_owner,tokenid); 
+    function unstake( uint16 tokenid) public{
+        usersDetails memory details = Details[tokenid];
+        require( msg.sender == details.owner, "not owner of stake");
+        IERC721(StakeNFT).transferFrom(address(this), msg.sender,tokenid);
+        emit unstaked(msg.sender, tokenid);       
+        claim(tokenid); 
         numberOfStake -= tokenid;
+        delete Details[tokenid];
     }
 
-    function unstake (uint16 tokenid) external whenNotPaused  nonReentrant() {
-        _unstake(tokenid, msg.sender);
+    function _earnedInfo(uint16 tokenid) public  view  returns(uint256 reward){
+        usersDetails memory details = Details[tokenid];
+        require( details.owner == msg.sender, "not owner of stake");   
+        uint256 stakedAt = details.blockTime;
+        reward = 1e18 * (block.timestamp - stakedAt)/ rate;
     }
 
-    function _earnedInfo(uint16 tokenid, address _owner) internal view  returns(uint256 reward){
-        require(Details[tokenid].owner == _owner, "not owner of stake");
-        uint256 stakedAt = Details[tokenid].blockTime ;
-        uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ rate;
-        reward += earned / 10000;
-    }
-
-    function earnedInfo(uint16 tokenid) view external returns(uint256 reward){
-        reward = _earnedInfo(tokenid, msg.sender);
-    }
-
-    function _claim(address _owner, uint16 tokenid) internal {
-        uint256 reward;
-        require(Details[tokenid].owner == _owner, "not owner of stake");
+    function claim(uint16 tokenid) public {
+        usersDetails memory details = Details[tokenid];
+        require( details.owner == msg.sender, "not owner of stake");       
         require(block.timestamp - Details[tokenid].blockTime > LOCKUP_TIME, "You recently staked, please wait before withdrawing.");
-        uint256 stakedAt = Details[tokenid].blockTime ;
-        uint256 earned = 10000e18 * (block.timestamp - stakedAt)/ rate ;
-        Details[tokenid].blockTime = block.timestamp;
-        reward += earned / 10000;
-        emit claimed(_owner,tokenid, reward);
+        uint256 stakedAt = details.blockTime;
+        uint256 reward = (1e18 * (block.timestamp - stakedAt))/ rate ;
+        details.blockTime= block.timestamp;
+        reward = reward / 100000;
+        emit claimed(msg.sender,tokenid, reward);
         if(reward > 0){
             require(IERC20(RewardToken).balanceOf(address(this)) > reward, "not enough rewards tokens");
-            IERC20(RewardToken).transfer( _owner, reward);   
+            IERC20(RewardToken).transfer( msg.sender, reward);   
         }
     }
 
-    function claim (uint16 tokenid) external whenNotPaused  nonReentrant() {
-        _claim(msg.sender,tokenid); 
-    }
-
-    // 
-    // function emergencyWithdraw(uint256[] calldata tokenIds) external noContractsAllowed nonReentrant() {
-    //     if(block.timestamp - Details[tokenIds[i]].blockTime < LOCKUP_TIME){
-
-    //     }
-    // }
-
     // @dev withdraws the remaining rewardToken from the contracts
-    function withdrawTokens() external onlyOwner {
+    function withdrawTokens() public onlyOwner {
         uint256 tokenSupply = IERC20(RewardToken).balanceOf(address(this));
         require(IERC20(RewardToken).transfer(msg.sender, tokenSupply), "Could not transfer Reward Token!");
     }
-
 }

@@ -27,9 +27,9 @@ export default function Modals(props) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [stake, usestake] = useState<number>(0);
-  const [unstake, useunstake] = useState<number>(0);
-  const [claim, useclaime] = useState<number>(0);
+  const [stake, setstake] = useState<number>(0);
+  const [unstake, setunstake] = useState<number>(0);
+  const [claim, setclaim] = useState<number>(0);
 
   
 
@@ -66,9 +66,83 @@ export default function Modals(props) {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-
+    setstake(0)
     deployVault?.();
   }
+
+  ////////////////////////////////////////////////////////////////claim///////////////////////////////////////////////////////////
+  const { data: claimVaultData, write: claimVault, isLoading: claimVaultLoading } = useContractWrite({
+    mode: "recklesslyUnprepared",
+    address: props.address ,
+    abi: VaultFactory,
+    functionName: "claim",
+    args: [claim],
+
+
+    onError(error) {
+      // @ts-ignore
+      toast.error(`Failed! ${error.reason}`)
+    }
+  })
+
+
+const { isLoading: claimVaultWaitLoading } = useWaitForTransaction({
+  hash: claimVaultData?.hash,
+
+  onSuccess(data) {
+    // @ts-ignore
+    toast.success(`claimed successfully`)
+  },
+
+  onError(error) {
+    // @ts-ignore
+    toast.error(`Failed! ${error.reason}`)
+  }
+})
+
+const handleClaim = (e: any) => {
+  e.preventDefault();
+
+  claimVault?.();
+  setclaim(0)
+}
+
+//////////////////////////////////////////////////////////////////////////////////////unstake///////////////////////////////////////////////////////
+
+const { data: unstakeVaultData, write: unstakeVault, isLoading: unstakeVaultLoading } = useContractWrite({
+  mode: "recklesslyUnprepared",
+  address: props.address ,
+  abi: VaultFactory,
+  functionName: "claim",
+  args: [unstake],
+
+  onError(error) {
+    // @ts-ignore
+    toast.error(`Failed! ${error.reason}`)
+  }
+})
+
+
+const { isLoading: unstakeVaultWaitLoading } = useWaitForTransaction({
+hash: unstakeVaultData?.hash,
+
+onSuccess(data) {
+  // @ts-ignore
+  toast.success(`unstake successfully`)
+},
+
+onError(error) {
+  // @ts-ignore
+  toast.error(`Failed! ${error.reason}`)
+}
+})
+
+const handleUnstake = (e: any) => {
+e.preventDefault();
+
+unstakeVault?.();
+setunstake(0)
+}
 
   return (
     <div>
@@ -86,10 +160,10 @@ export default function Modals(props) {
       >
         <Fade in={open}>
         <Box sx={style} className = "">
-        <p className='text-slate-300'> Your Token will be locked for 21days when staked, so you can claim after 21days</p>
+        <p className='text-slate-300'> Your Token will be locked for 21days when staked, so you can claim after 21days. Also Check for your rewards on etherscan</p>
           <form onSubmit={handleSubmit} className='flex justify-center  m-12'  >
-            <input type="number" placeholder='NFT ID' 
-                className= 'md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'onChange={(e: any) => Number(usestake(e.target.value))}  />
+            <input type="number" placeholder='NFT ID' id="myForm"
+                className= 'md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'onChange={(e: any) => Number(setstake(e.target.value))}  />
             <div className='-mt-2 ml-6'>
               <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50' type='submit'>
               {
@@ -98,16 +172,24 @@ export default function Modals(props) {
               </button>
             </div>    
           </form>
-          <form action=""  className='flex justify-center m-12'>
-            <input type="text" placeholder='NFT ID'  className=' md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'onChange={(e: any) => useclaime(e.target.value)} />
+          <form onSubmit={handleClaim} className='flex justify-center m-12'>
+            <input type="text" placeholder='NFT ID'  className=' md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'onChange={(e: any) => setclaim(e.target.value)} />
             <div className='-mt-2 ml-6'>
-              <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50 'type='submit'>Claim</button>
+              <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50 'type='submit'>
+              {
+                claimVaultLoading || unstakeVaultWaitLoading ? "claiming" : "claim"
+              }
+              </button>
             </div>
           </form>
-          <form action=""  className='flex justify-center  m-12'>
-            <input type="text" placeholder='NFT ID' className=' md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'  onChange={(e: any) => useunstake(e.target.value)} />
+          <form onSubmit={handleUnstake}  className='flex justify-center  m-12'>
+            <input type="text" placeholder='NFT ID' className=' md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'  onChange={(e: any) => setunstake(e.target.value)} />
             <div className='-mt-2 ml-6'>
-              <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50' type='submit'>Unstake</button>
+              <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50' type='submit'>
+              {
+                unstakeVaultLoading || claimVaultWaitLoading ? "Ustaking" : "unstake"
+              }
+              </button>
             </div>           
           </form>
           </Box>

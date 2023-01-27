@@ -29,7 +29,7 @@ contract Vaulttest is Test {
     }
 
     function testDeployerVault() public {
-        vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        vaultDeployer.deploy(address(mockNFT), address(rewardToken), 1, 'more', address(user1));
         vaultDeployer.info();
     }
 
@@ -39,7 +39,7 @@ contract Vaulttest is Test {
 
     // 
     function testStake() public {
-        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 1, 'more', address(user1));
         mockNFT.mint(2 ,address(user2) );
         rewardToken.mint(address(vault2), 100000000000e18);  
         vm.startPrank(address(user2));
@@ -57,7 +57,7 @@ contract Vaulttest is Test {
   
     function testpause() public {
         vm.startPrank(address(user1));
-        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 1, 'more', address(user1));
         Ivault(vault2).pause();  
         Ivault(vault2).unpause();  
         vm.stopPrank();
@@ -65,7 +65,7 @@ contract Vaulttest is Test {
 
     function testwithdraw() public {
         vm.startPrank(address(user1));
-        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 1, 'more', address(user1));
         rewardToken.mint(address(vault), 100000000000e18);  
         Ivault(vault2).withdrawTokens();  
         vm.stopPrank();
@@ -76,18 +76,18 @@ contract Vaulttest is Test {
         mockNFT.mint(1 ,address(user1) );
         mockNFT.mint(2 ,address(user1) );
         mockNFT.mint(3 ,address(user1) );
-        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 1, 'more', address(user1));
         rewardToken.mint(address(vault2), 100000000000e18);
         vm.startPrank(address(user1));
         mockNFT.approve(address(vault2), 1);
         mockNFT.approve(address(vault2), 2);
         mockNFT.approve(address(vault2), 3);
         Ivault(vault2).stake(1);
-        vm.warp(1677000000);
+        vm.warp(1675000000);
         Ivault(vault2).claim(1);
         uint256 _bal = rewardToken.balanceOf(address(user1));
         emit balance(_bal,address(user1));
-        vm.warp(1679000000);
+        vm.warp(1676000000);
         Ivault(vault2).claim(1);
         rewardToken.balanceOf(address(user1));
         vm.stopPrank();  
@@ -95,22 +95,21 @@ contract Vaulttest is Test {
   
     event Info(uint256 info);
     function testInfo() public {
-        mockNFT.mint(1 ,address(user1) );
+        mockNFT.mint(1 ,address(user2) );
         mockNFT.mint(2 ,address(user1) );
-        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 7, 'more', address(user1));
+        address vault2 =  vaultDeployer.deploy(address(mockNFT), address(rewardToken), 1, 'more', address(user1));
         rewardToken.mint(address(vault2), 100000000000e18);
-        vm.startPrank(address(user1));
+        vm.startPrank(address(user2));
         mockNFT.approve(address(vault2), 1);
-        mockNFT.approve(address(vault2), 2);
         Ivault(vault2).stake(1);
-        vm.warp(1676000000);
+        vm.warp(1675000000);
         // uint info = Ivault(vault2).earnedInfo(1);
         // emit Info(info);
-        vm.warp(1677000000);
+        vm.warp(1676000000);
         Ivault(vault2).claim(1);    
-        vm.warp(1679000000);
+        vm.warp(1677000000);
         Ivault(vault2).unstake(1);
-        rewardToken.balanceOf(address(user1));
+        rewardToken.balanceOf(address(user2));
         vm.stopPrank(); 
     }
 
@@ -130,3 +129,5 @@ interface Ivault {
     function unpause() external;
     function earnedInfo(uint16 tokenid) external;
 }
+
+//205432000000000000000000

@@ -38,17 +38,16 @@ export default function Stake() {
         <Outlet />
       </div>
 
-      <UserInfo/>
       <div className='flex flex-col justify-center items-center text-zinc-900'>
         <div className='text-4xl'>More Protocol</div>
           <p className='text-2xl'>Securing NFT liquidity across DeFi Protocol</p>
         <div className='bg-orange-200 my-8'>
-
         </div>
-        <div className='bg-orange-200 flex flex-col justify-center w-3/5 rounded-md items-center p-7'>
-          <div className='flex justify-between py-12'>
-            <div className='px-32 text-3xl'>vaultName</div>
-            <div className='px-32 text-3xl'>rate </div>
+        <div className='bg-orange-200 w-3/5 rounded-md items-center p-7'>
+          <div className='flex justify-around py-12'>
+            <div className='text-3xl'>vaultName</div>
+            <div className=' text-3xl'>rate </div>
+            <div className=' text-3xl'>mange </div>
           </div>
           {
             // @ts-ignore
@@ -56,13 +55,11 @@ export default function Stake() {
               console.log({detail, _i}); 
 
               return (
-                <div key={_i} className='flex justify-between m-8 justify-center bg-zinc-900 text-slate-50 p-5 rounded-2xl'>
-                  <div className='px-32 text-xl '>{detail?.vaultName}</div>
-                  <div className='px-32 text-xl'>{ethers.utils.formatUnits(detail?.vaultIndex, 0)} days</div>
-                  <div>
+                <div key={_i} className='flex justify-around bg-zinc-900 text-slate-50 p-1 rounded-2xl w-4/5 m-auto'>
+                  <div className='  text-xl '>{detail?.vaultName}</div>
+                  <div className=' text-xl'>{ethers.utils.formatUnits(detail?.vaultIndex, 0)} days</div>
                   <TransitionsModal address = {detail?.vaultAddress}/>
-                </div>
-                </div>
+                </div>    
               )
             })
           }
@@ -72,4 +69,3 @@ export default function Stake() {
     </div>
   )
 }
-
