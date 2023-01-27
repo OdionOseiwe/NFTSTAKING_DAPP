@@ -13,3 +13,4 @@ The Home Page on More Protocol
   <img src="./img/stake.png" width="350">
 </p>
 
+When deploying a Vault it's done on the block explorer.
