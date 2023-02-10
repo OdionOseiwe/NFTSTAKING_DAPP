@@ -49,6 +49,7 @@ contract Vaulttest is Test {
         Ivault(vault2).claim(2);
         uint256 _bal = rewardToken.balanceOf(address(user2));
         emit balance(_bal,address(user2));
+        
         // vm.expectRevert(bytes('You recently staked, please wait before withdrawing'));
         // vault2.claim(id);
         rewardToken.balanceOf(address(user2));
@@ -83,11 +84,12 @@ contract Vaulttest is Test {
         mockNFT.approve(address(vault2), 2);
         mockNFT.approve(address(vault2), 3);
         Ivault(vault2).stake(1);
-        vm.warp(1675000000);
+        vm.warp(1677000000);
+        Ivault(vault2).userIds();
         Ivault(vault2).claim(1);
         uint256 _bal = rewardToken.balanceOf(address(user1));
         emit balance(_bal,address(user1));
-        vm.warp(1676000000);
+        vm.warp(1676500000);
         Ivault(vault2).claim(1);
         rewardToken.balanceOf(address(user1));
         vm.stopPrank();  
@@ -102,12 +104,12 @@ contract Vaulttest is Test {
         vm.startPrank(address(user2));
         mockNFT.approve(address(vault2), 1);
         Ivault(vault2).stake(1);
-        vm.warp(1675000000);
+        vm.warp(1677000000);
         // uint info = Ivault(vault2).earnedInfo(1);
         // emit Info(info);
-        vm.warp(1676000000);
-        Ivault(vault2).claim(1);    
         vm.warp(1677000000);
+        Ivault(vault2).claim(1);    
+        vm.warp(1678000000);
         Ivault(vault2).unstake(1);
         rewardToken.balanceOf(address(user2));
         vm.stopPrank(); 
@@ -128,6 +130,7 @@ interface Ivault {
     function pause() external;
     function unpause() external;
     function earnedInfo(uint16 tokenid) external;
+    function userIds() external returns(uint16[] memory);
 }
 
 //205432000000000000000000

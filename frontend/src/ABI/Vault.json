@@ -215,14 +215,25 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "UsersIDs",
+    "outputs": [
+      {
         "internalType": "uint16",
-        "name": "tokenid",
+        "name": "",
         "type": "uint16"
       }
     ],
-    "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -233,7 +244,7 @@
         "type": "uint16"
       }
     ],
-    "name": "earnedInfo",
+    "name": "_earnedInfo",
     "outputs": [
       {
         "internalType": "uint256",
@@ -242,6 +253,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "tokenid",
+        "type": "uint16"
+      }
+    ],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

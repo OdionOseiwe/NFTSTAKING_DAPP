@@ -146,7 +146,7 @@ setunstake(0)
 
   return (
     <div>
-      <Button onClick={handleOpen} >manage</Button>
+      <Button onClick={handleOpen} >stake</Button>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -160,8 +160,9 @@ setunstake(0)
       >
         <Fade in={open}>
         <Box sx={style} className = "">
-        <p className='text-slate-300'> Your Token will be locked for 21days when staked, so you can claim after 21days. Also Check for your rewards on etherscan</p>
-          <form onSubmit={handleSubmit} className='flex justify-center  m-12'  >
+        <p className='text-slate-300'> Your Token will be locked for 21days when staked, so you can claim after 21days. The rate is the number of days before you get a token</p>
+
+          <form onSubmit={handleSubmit} className='flex justify-center m-12'>
             <input type="number" placeholder='NFT ID' id="myForm"
                 className= 'md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'onChange={(e: any) => Number(setstake(e.target.value))}  />
             <div className='-mt-2 ml-6'>
@@ -172,26 +173,7 @@ setunstake(0)
               </button>
             </div>    
           </form>
-          <form onSubmit={handleClaim} className='flex justify-center m-12'>
-            <input type="text" placeholder='NFT ID'  className=' md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'onChange={(e: any) => setclaim(e.target.value)} />
-            <div className='-mt-2 ml-6'>
-              <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50 'type='submit'>
-              {
-                claimVaultLoading || unstakeVaultWaitLoading ? "claiming" : "claim"
-              }
-              </button>
-            </div>
-          </form>
-          <form onSubmit={handleUnstake}  className='flex justify-center  m-12'>
-            <input type="text" placeholder='NFT ID' className=' md:w-3/5 h-10  p-2 outline-none rounded-md text-slate-900'  onChange={(e: any) => setunstake(e.target.value)} />
-            <div className='-mt-2 ml-6'>
-              <button className='p-3  border-solid border-2 border-sky-500  rounded-2xl text-neutral-50' type='submit'>
-              {
-                unstakeVaultLoading || claimVaultWaitLoading ? "Ustaking" : "unstake"
-              }
-              </button>
-            </div>           
-          </form>
+          
           </Box>
         </Fade>
       </Modal>

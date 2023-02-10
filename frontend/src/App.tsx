@@ -1,14 +1,11 @@
 import './App.css';
 import Home from './Home';
-import Stake from './Stake';
+import StakePage from './StakePage';
 import Vault from './Vault';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "@rainbow-me/rainbowkit/styles.css";
-import React from "react";
 import { getDefaultWallets, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 import './App.css';
 import { mainnet, polygon, optimism, goerli } from 'wagmi/chains'
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
@@ -58,7 +55,7 @@ export default function App() {
           <Routes>
             <Route path="/">
               <Route index element={<Home />} />
-              <Route path="stake" element={<Stake />} />
+              <Route path="stake" element={<StakePage />} />
               <Route path="vault" element={<Vault />} />
             </Route>
           </Routes>

@@ -28,8 +28,11 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         uint256 blockTime;
     }
 
-    /// @dev mapping of address to token id to details of the stake
+    /// @dev mapping of token id to details of the stake
     mapping(uint256 => usersDetails) public Details;
+
+    /// @dev mapping of address to an array of tokenID
+    mapping(address => uint16[]) public UsersIDs;
 
     /// @dev tokenid to boolean to check if its been staked already 
     mapping(uint256 => bool) tokenIDstaked;
@@ -85,6 +88,7 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         details.blockTime = block.timestamp;
         emit staked(msg.sender, tokenid, block.timestamp);
         numberOfStake += tokenid;
+        UsersIDs[msg.sender].push(tokenid);
     }
 
     function unstake( uint16 tokenid) public{
@@ -102,6 +106,10 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         require( details.owner == msg.sender, "not owner of stake");   
         uint256 stakedAt = details.blockTime;
         reward = 1e18 * (block.timestamp - stakedAt)/ rate;
+    }
+
+    function userIds() external returns(uint16[] memory){
+        return UsersIDs[msg.sender];
     }
 
     function claim(uint16 tokenid) public {

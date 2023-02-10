@@ -1,3 +1,142 @@
 .App {
   text-align: center;
 }
+
+@media only screen and (max-width: 700px) {
+  .Home-nav{
+    font-size:  16px;
+  }
+  
+  .Home-nav-com{
+    padding-left: 10px;
+  }
+
+  .Home{
+    padding: 0;
+  }
+
+  .Home-con{
+    display:  block;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .Table{
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .Table-title{
+    font-size: 20px;
+  }
+
+  .Table-details{
+    width: 100%;
+  }
+}
+
+.Stake{
+  color: black;
+  background-color: rgb(253, 215, 168);
+  margin-bottom: 50px;
+  padding: 40px;
+  border-radius: 20px;
+  margin-left: 100px;
+  width: 500px;
+}
+
+.Stake--box--title{
+  font-size: 25px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 600;
+  text-align: center;
+}
+
+.stake--APR{
+  display: flex;
+  font-size: 20px;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.per{
+  font-weight: 600;
+}
+
+.stake--earn{
+  display: flex;
+  font-size: 20px;
+  justify-content: space-between;
+}
+
+.pairs{
+  font-weight: 600;
+}
+
+.stake--ID{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  background-color: rgb(46, 43, 43);
+  color: #fff;
+  padding: 2px;
+  border-radius: 20px;
+}
+
+.NFT---title{
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  padding: 20px;
+}
+
+.rewards{
+  padding: 10px;
+  font-size: 20px;
+}
+
+.stake--claim{
+  background-color: blue;
+  border-radius: 10px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.claim{
+  margin-left: 20px;
+  padding: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  background-color: rgb(253, 215, 168);
+  border-radius: 10px;
+}
+
+.ID{
+  padding: 20px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.stake--unstake{
+  padding: 7px;
+  text-transform: uppercase;
+  font-weight: 600;
+  background-color: rgb(253, 215, 168);
+  border-radius: 10px;
+  margin-right: 10px;
+}
+
+div.scrollmenu {
+  overflow: auto;
+  white-space: nowrap;
+  display: flex;
+  margin-top: 50px;
+  margin-bottom: 100px;
+}
+
+div.scrollmenu a:hover {
+  background-color: #777;
+}
