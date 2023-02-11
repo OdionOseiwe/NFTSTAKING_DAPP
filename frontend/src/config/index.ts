@@ -1,6 +1,6 @@
 import VaultFactory from "../ABI/deployer.json"
 
-export const VAULT_FACTORY_ADDRESS = "0x59A64F278b4EA1e2B777AfD2fE7727a8804A59a5";
+export const VAULT_FACTORY_ADDRESS = "0x13d234BFe546bD439D2846df5a603929dF772496";
 
 export const VAULT_FACTORY_CONTRACT = {
     address: VAULT_FACTORY_ADDRESS,

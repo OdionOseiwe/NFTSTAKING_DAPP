@@ -84,6 +84,7 @@ contract Vaulttest is Test {
         mockNFT.approve(address(vault2), 2);
         mockNFT.approve(address(vault2), 3);
         Ivault(vault2).stake(1);
+        Ivault(vault2).stake(2);        
         vm.warp(1677000000);
         Ivault(vault2).userIds();
         Ivault(vault2).claim(1);

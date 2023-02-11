@@ -108,8 +108,11 @@ contract Vault is Pausable,ReentrancyGuard, Ownable{
         reward = 1e18 * (block.timestamp - stakedAt)/ rate;
     }
 
-    function userIds() external returns(uint16[] memory){
-        return UsersIDs[msg.sender];
+    function userIds() external view returns(uint16[] memory ids){
+        ids  = new uint16[](UsersIDs[msg.sender].length - 1);         
+        for (uint256 i = 0; i < ids.length; i++) {
+            ids[i] = UsersIDs[msg.sender][i];
+        }
     }
 
     function claim(uint16 tokenid) public {
