@@ -422,7 +422,7 @@
     "outputs": [
       {
         "internalType": "uint16[]",
-        "name": "",
+        "name": "ids",
         "type": "uint16[]"
       }
     ],

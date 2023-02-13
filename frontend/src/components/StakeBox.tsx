@@ -1,14 +1,13 @@
 import React from 'react'
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useContractRead } from 'wagmi'
-import { VAULT_FACTORY_ADDRESS } from '../config';
 import VaultFactory from "../ABI/Vault.json";
 import { toast } from 'react-toastify';
 
-export default function StakeBox() {
+export default function StakeBox(props) {
 
     const { data: getData, isLoading: getLoading } = useContractRead({
-        address: VAULT_FACTORY_ADDRESS ,
+        address: '0x6B3dE365bE42022A86c4CC24a9E6057b80FD7A5C' ,
         abi: VaultFactory,
         functionName: "userIds",
     

@@ -18,8 +18,8 @@ const { chains, provider } = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: `https://goerli.infura.io/v3/e7af8fc766b941c498bc770af5246568`,
-        webSocket: `wss://goerli.infura.io/v3/e7af8fc766b941c498bc770af5246568`
+        http: `https://eth-goerli.g.alchemy.com/v2/cZArJ5hDwpU8r_6CXv9KbYMJWUtrr3qS`,
+        webSocket: `wss://eth-goerli.g.alchemy.com/v2/cZArJ5hDwpU8r_6CXv9KbYMJWUtrr3qS`
       }),
     }),
   ]

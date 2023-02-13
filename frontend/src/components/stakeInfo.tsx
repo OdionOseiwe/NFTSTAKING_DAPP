@@ -38,8 +38,6 @@ export default function Stakeinfo() {
           {
             // @ts-ignore
             getData ?  Object.values(getData).map((detail: any, _i: number) => {
-              console.log({detail, _i}); 
-
               return (
                 <div key={_i} className='Table-details flex justify-around bg-zinc-900 text-slate-50 p-1 rounded-2xl w-4/5 m-auto'>
                   <div className='  text-xl '>{detail?.vaultName}</div>
